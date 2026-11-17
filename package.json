@@ -1,0 +1,9 @@
+{
+  "name": "aryan-gaming-panel",
+  "version": "1.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {"build": "vite build"},
+  "dependencies": {"firebase": "10.8.0"},
+  "devDependencies": {"vite": "5.4.14"}
+}
