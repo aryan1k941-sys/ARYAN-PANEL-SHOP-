@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+    <title>ARYAN GAMING | ADMIN PANEL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <style>
+        :root {
+            --bg-color: #0b0a12;
+            --card-bg: rgba(20, 18, 31, 0.7);
+            --card-border: rgba(0, 240, 255, 0.1);
+            --neon-pink: #ff007f;
+            --neon-purple: #bc13fe;
+            --neon-cyan: #00f0ff;
+            --text-main: #ffffff;
+            --text-muted: #8a8f9e;
+            --success: #00ff66;
+            --speed: #ff2a5f;
+            --warning: #ffaa00;
+            --brand-red: #e61a1a;
+            --input-bg: #1c1a27;
+            --error: #ff2a5f;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
+        
+        .hidden { display: none !important; }
+
+        /* -----------------------------------------
+           ULTRA FAST FULLSCREEN SPEED LOADER
+        ------------------------------------------- */
+        #loader { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #06050a; z-index: 10005; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            transition: opacity 0.2s ease-out;
+        }
+        .speed-spinner-box {
+            position: relative; width: 80px; height: 80px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .spinner-outer { 
+            width: 100%; height: 100%; 
+            border: 4px solid rgba(0, 240, 255, 0.05); 
+            border-top-color: var(--neon-cyan); 
+            border-bottom-color: var(--neon-purple);
+            border-radius: 50%; 
+            animation: super-spin 0.6s linear infinite; 
+        }
+        .spinner-inner {
+            position: absolute; width: 50px; height: 50px;
+            border: 3px solid rgba(255, 0, 127, 0.05);
+            border-left-color: var(--neon-pink);
+            border-radius: 50%;
+            animation: super-spin-reverse 0.4s linear infinite;
+        }
+        .loader-text {
+            margin-top: 20px; font-size: 13px; font-weight: 700;
+            color: #ffffff; letter-spacing: 2px; text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+            animation: pulse-text 1s ease-in-out infinite alternate;
+        }
+        @keyframes super-spin { 100% { transform: rotate(360deg); } }
+        @keyframes super-spin-reverse { 100% { transform: rotate(-360deg); } }
+        @keyframes pulse-text { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* -----------------------------------------
+           PREMIUM LOGIN SCREEN
+        ------------------------------------------- */
+        .login-wrapper {
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; width: 100vw; background: #07060b; padding: 20px;
+        }
+        .login-card {
+            background: #111019; width: 100%; max-width: 420px;
+            border-radius: 28px; padding: 35px 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.03); text-align: center;
+        }
+        .login-icon-circle {
+            width: 85px; height: 85px; background: var(--brand-red); border-radius: 50%;
+            display: inline-flex; justify-content: center; align-items: center;
+            font-size: 38px; color: white; box-shadow: 0 0 25px rgba(230,26,26,0.4);
+            margin-bottom: 25px; transform: rotate(-45deg);
+        }
+        .login-card h1 { font-size: 28px; font-weight: 700; color: white; margin-bottom: 8px; }
+        .login-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 30px; }
+        
+        .auth-group { text-align: left; margin-bottom: 20px; }
+        .auth-group label { display: block; font-size: 13px; color: #b3b3b3; margin-bottom: 8px; font-weight: 500; }
+        .auth-group label i { margin-right: 6px; color: var(--brand-red); }
+        
+        .auth-input-container { position: relative; width: 100%; }
+        .auth-input-container i.field-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--brand-red); font-size: 16px; }
+        .auth-input-container i.toggle-eye { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); cursor: pointer; }
+        
+        .auth-input {
+            width: 100%; height: 54px; background: var(--input-bg);
+            border: 1px solid rgba(255,255,255,0.05); border-radius: 14px;
+            color: white; padding: 0 45px; font-size: 14px; outline: none; transition: 0.3s;
+        }
+        .auth-input.focused-red { border-color: var(--brand-red); box-shadow: 0 0 10px rgba(230,26,26,0.1); }
+        
+        .btn-signin {
+            width: 100%; height: 54px; background: linear-gradient(90deg, #cc1414, #ff2a2a);
+            color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 600;
+            cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px;
+            margin-top: 25px; box-shadow: 0 6px 20px rgba(230,26,26,0.3); transition: 0.3s;
+        }
+        
+        .support-box { margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.03); }
+        .support-title { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .support-title i { color: var(--brand-red); }
+        .social-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .social-btn { height: 42px; border-radius: 20px; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; text-decoration: none; color: white; }
+        .social-btn.wa { background: #128c7e; }
+        .social-btn.tg { background: #0088cc; }
+
+        /* -----------------------------------------
+           MAIN WORKSPACE STYLES
+        ------------------------------------------- */
+        .glass {
+            background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border); border-radius: 16px; padding: 25px; margin-bottom: 25px;
+        }
+
+        .navbar {
+            position: fixed; top: 0; left: 0; width: 100%; height: 70px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 20px; z-index: 999; border-bottom: 1px solid rgba(255,255,255,0.05); background: #0b0a12;
+        }
+        .nav-left { display: flex; align-items: center; gap: 15px; }
+        .menu-btn { background: none; border: none; color: white; font-size: 15px; cursor: pointer; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 10px; -webkit-tap-highlight-color: transparent; }
+        .menu-btn i { font-size: 15px; }
+        .logo { font-weight: 800; font-size: 20px; letter-spacing: 1px; }
+        .logo span { color: var(--neon-cyan); }
+
+        .sidebar {
+            position: fixed; top: 0; left: -256px; width: 256px; height: 100%;
+            background: #110f1a; z-index: 1001; transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex; flex-direction: column; padding: 20px 14px; box-shadow: 10px 0 40px rgba(0,0,0,0.6);
+        }
+        .sidebar.active { left: 0; }
+        .sidebar-header-box { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; position: relative; padding-right: 22px; }
+        .admin-brand-dp{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid #ff2525;box-shadow:0 0 12px rgba(255,30,30,.65);vertical-align:middle;margin-right:8px}
+        .sidebar-logo-icon-bg { flex-shrink: 0; width: 34px; height: 34px; background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple)); border-radius: 10px; display: flex; justify-content: center; align-items: center; color: white; font-size: 14px; }
+        .sidebar-header-text { display: flex; flex-direction: column; }
+        .sidebar-header-title { font-weight: 700; font-size: 13px; line-height: 1.25; color: #ffffff; }
+        .sidebar-header-subtitle { font-size: 8px; font-weight: 700; color: var(--neon-cyan); text-transform: uppercase; margin-top: 1px; }
+        .sidebar-close { position: absolute; right: 0; top: 6px; background: none; border: none; color: #5f5a75; font-size: 14px; cursor: pointer; }
+
+        .sidebar-menu-cat { font-size: 8px; font-weight: 700; color: #575270; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 8px; margin-left: 6px; }
+        .sidebar-menu-list { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+        .sidebar-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; color: #928daf; font-size: 12px; font-weight: 500; border-radius: 10px; cursor: pointer; transition: 0.3s; }
+        .sidebar-item i { font-size: 13px; width: 16px; text-align: center; }
+        
+        .sidebar-item.active-menu { background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple)); color: #ffffff; font-weight: 600; }
+        .sidebar-item:hover:not(.active-menu):not(.menu-logout-btn) { background: rgba(255,255,255,0.03); color: #ffffff; }
+        
+        .sidebar-item.menu-logout-btn {
+            margin-top: 10px; background: rgba(255, 42, 95, 0.1);
+            border: 1px solid rgba(255, 42, 95, 0.2); color: var(--error); font-weight: 600;
+        }
+        .sidebar-item.menu-logout-btn i { color: var(--error); }
+        .sidebar-item.menu-logout-btn:hover { background: var(--error); color: white; }
+        .sidebar-item.menu-logout-btn:hover i { color: white; }
+
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; backdrop-filter: blur(5px); }
+        .sidebar-overlay.active { display: block; }
+
+        .container { padding: 95px 20px 30px 20px; max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        
+        /* -----------------------------------------
+           DASHBOARD STAT CARDS
+        ------------------------------------------- */
+        .stat-card { 
+            background: #14121f; border-left: 4px solid var(--neon-cyan); border-radius: 12px; 
+            padding: 25px 20px; display: flex; flex-direction: column; gap: 5px;
+            cursor: pointer; transition: all 0.2s ease; user-select: none;
+        }
+        .stat-card.purple { border-left-color: var(--neon-purple); }
+        .stat-card.pink { border-left-color: var(--neon-pink); }
+        
+        .stat-card:active {
+            transform: scale(0.98);
+            background: rgba(0, 240, 255, 0.12) !important;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
+        }
+        .stat-card.purple:active {
+            background: rgba(188, 19, 254, 0.12) !important;
+            box-shadow: 0 0 15px rgba(188, 19, 254, 0.25);
+        }
+        .stat-card.pink:active {
+            background: rgba(255, 0, 127, 0.12) !important;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.25);
+        }
+
+        .stat-num { font-size: 36px; font-weight: 700; color: #fff; }
+        .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+        .stat-header { display: flex; justify-content: space-between; align-items: center; }
+
+        h2 { font-size: 16px; font-weight: 700; text-transform: uppercase; margin-bottom: 20px; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; }
+        h2 i { color: var(--neon-cyan); }
+
+        .input-group { margin-bottom: 16px; }
+        .input-group label { display: block; font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+        .input-group input, .custom-select { width: 100%; padding: 0 16px; height: 45px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: white; outline: none; font-size: 14px; }
+
+        .btn { width: 100%; height: 45px; border-radius: 10px; border: none; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; display: inline-flex; justify-content: center; align-items: center; gap: 8px; font-size: 14px; }
+        .btn-cyan { background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple)); color: white; }
+        .btn-pink { background: linear-gradient(90deg, var(--neon-pink), var(--neon-purple)); color: white; }
+
+        .table-wrapper { overflow-x: auto; margin-top: 15px; background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 950px; }
+        th { padding: 12px; color: var(--neon-cyan); text-transform: uppercase; font-size: 11px; border-bottom: 2px solid rgba(255,255,255,0.05); }
+        td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.02); vertical-align: middle; }
+        
+        .table-input { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px 10px; border-radius: 6px; outline: none; width: 100%; }
+        .ro-text { color: var(--text-muted); font-weight: 500; font-size: 13px; }
+        .badge-bal { color: var(--success); font-weight: 700; font-size: 14px; display: block; }
+
+        .balance-control-box { display: flex; gap: 5px; align-items: center; max-width: 120px; }
+        .balance-control-box input { height: 32px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: #00ff66; text-align: center; width: 100%; }
+
+        .action-btn { border: none; padding: 6px 12px; font-size: 11px; font-weight: 700; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+        .action-btn.add { background: var(--success); color: black; }
+        .action-btn.edit { background: var(--warning); color: black; }
+        .action-btn.ban { background: #ff7700; color: white; }
+        .action-btn.unban { background: #00e1ff; color: black; }
+        .action-btn.delete { background: var(--error); color: white; }
+        .action-btn.toggle-on { background: #00ff66; color: black; }
+        .action-btn.toggle-off { background: #575270; color: white; }
+
+        #toast-container { position: fixed; top: 25px; right: 25px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 14px 20px; border-radius: 12px; color: white; font-weight: 600; font-size: 13px; background: #14121f; border-left: 4px solid var(--neon-cyan); display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .toast.error { border-left-color: var(--error); }
+
+        /* ===== AUTO PAYMENT SETTINGS ===== */
+        .ap-head { display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+        .ap-head .ic { width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg,#ff00e5,#a1009a); display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px; box-shadow:0 6px 20px rgba(255,0,229,.35); }
+        .ap-head h2 { margin:0 !important; }
+        .ap-desc { font-size:12px; color:var(--text-muted); margin-bottom:18px; line-height:1.5; }
+        .ap-switch-row { display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,.3); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:12px 14px; margin-bottom:16px; font-size:13px; font-weight:600; }
+        .ap-switch { position:relative; width:48px; height:26px; }
+        .ap-switch input { opacity:0; width:0; height:0; }
+        .ap-slider { position:absolute; inset:0; background:#3a3650; border-radius:26px; cursor:pointer; transition:.25s; }
+        .ap-slider:before { content:""; position:absolute; height:20px; width:20px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.25s; }
+        .ap-switch input:checked + .ap-slider { background:linear-gradient(90deg,#ff00e5,#a1009a); }
+        .ap-switch input:checked + .ap-slider:before { transform:translateX(22px); }
+        .ap-row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        .ap-keywrap { position:relative; }
+        .ap-keywrap button { position:absolute; right:6px; top:5px; height:35px; width:38px; background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size:14px; }
+        .ap-log { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid rgba(255,255,255,.05); font-size:12px; }
+        .ap-log:last-child { border-bottom:none; }
+        .ap-log small { display:block; color:var(--text-muted); font-size:10.5px; margin-top:2px; }
+        .ap-pill { font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:20px; text-transform:uppercase; }
+        .ap-pill.success { background:rgba(0,255,102,.12); color:#00ff66; }
+        .ap-pill.pending { background:rgba(255,170,0,.12); color:#ffaa00; }
+        .ap-pill.expired, .ap-pill.cancelled { background:rgba(255,42,95,.12); color:#ff2a5f; }
+
+        .file-input { color: var(--text-muted); font-size: 12px; width: 100%; }
+        .img-preview { width: 100%; max-width: 260px; border-radius: 12px; margin-top: 8px; }
+        .tag-box { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag-chk { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.12); font-size: 12px; font-weight: 600; color: #ddd; cursor: pointer; background: rgba(0,0,0,0.3); user-select: none; }
+        .tag-chk input { accent-color: var(--neon-purple); }
+        .plan-box { display: flex; flex-direction: column; gap: 8px; }
+        .plan-row { display: grid; grid-template-columns: 1fr 96px 96px 40px; gap: 8px; }
+        .plan-row input, .ec-input { height: 42px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 0 12px; outline: none; min-width: 0; width: 100%; font-size: 13px; }
+        .pl-del { background: var(--error); color: #fff; border: none; border-radius: 10px; cursor: pointer; }
+        .plan-head { display: grid; grid-template-columns: 1fr 96px 96px 40px; gap: 8px; padding: 0 2px; font-size: 10px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--text-muted); }
+        .plan-head span:nth-child(2) { color: var(--neon-cyan); }
+        .plan-head span:nth-child(3) { color: var(--neon-purple); }
+        .plan-hint { font-size: 11px; color: var(--text-muted); margin: 4px 0 8px; line-height: 1.5; }
+        .plan-hint b { color: #fff; }
+        .plan-row .pl-rprice { border-color: rgba(188,19,254,.25); }
+        .plan-row .pl-price { border-color: rgba(0,240,255,.25); }
+        @media (max-width: 520px) {
+            .plan-head { grid-template-columns: 1fr 1fr 40px; }
+            .plan-head span:first-child { grid-column: 1 / 3; }
+            .plan-row { grid-template-columns: 1fr 1fr 40px; }
+            .plan-row .pl-days { grid-column: 1 / 3; grid-row: 1; }
+            .plan-row .pl-del { grid-column: 3; grid-row: 1; height: 42px; }
+            .plan-row .pl-price { grid-column: 1; grid-row: 2; }
+            .plan-row .pl-rprice { grid-column: 2; grid-row: 2; }
+        }
+        .pl-add { background: transparent; border: 1px dashed var(--neon-cyan); color: var(--neon-cyan); padding: 9px 14px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 12px; align-self: flex-start; }
+        .edit-card { border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px; margin-bottom: 14px; background: rgba(0,0,0,0.25); display: flex; flex-direction: column; gap: 10px; }
+        .ec-head { display: flex; gap: 12px; align-items: center; }
+        .ec-thumb { width: 64px; height: 48px; object-fit: cover; border-radius: 8px; background: #000; }
+        .ec-title { font-weight: 700; text-transform: uppercase; font-size: 14px; }
+        .ec-actions { display: flex; gap: 10px; margin-top: 6px; }
+        .btn-save-sm, .btn-del-sm { flex: 1; height: 42px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        .btn-save-sm { background: var(--neon-cyan); color: #000; }
+        .btn-del-sm { background: var(--error); color: #fff; }
+        .fl { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+        .empty-note { color: var(--text-muted); font-size: 12px; }
+    
+        .add-hero { display: flex; gap: 14px; align-items: center; background: linear-gradient(135deg, rgba(0,240,255,0.12), rgba(188,19,254,0.14)); border: 1px solid rgba(0,240,255,0.2); }
+        .add-hero-ic { width: 52px; height: 52px; min-width: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple)); color: #fff; font-size: 22px; box-shadow: 0 0 20px rgba(188,19,254,0.4); }
+        .add-hero-t { font-size: 18px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .add-hero-s { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+        .add-card { padding: 20px; }
+        .step-h { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #e6e3f5; margin: 20px 0 10px; }
+        .step-n { width: 24px; height: 24px; border-radius: 8px; background: rgba(0,240,255,0.15); color: var(--neon-cyan); display: inline-flex; align-items: center; justify-content: center; font-size: 12px; border: 1px solid rgba(0,240,255,0.3); }
+        .drop-zone { position: relative; display: flex; align-items: center; justify-content: center; min-height: 170px; border: 2px dashed rgba(0,240,255,0.35); border-radius: 16px; background: rgba(0,0,0,0.3); cursor: pointer; overflow: hidden; transition: 0.2s; text-align: center; }
+        .drop-zone:hover, .drop-zone.over { border-color: var(--neon-purple); background: rgba(188,19,254,0.08); }
+        #drop-empty { display: flex; flex-direction: column; gap: 6px; align-items: center; color: var(--text-muted); padding: 20px; }
+        #drop-empty i { font-size: 30px; color: var(--neon-cyan); margin-bottom: 4px; }
+        #drop-empty b { color: #fff; font-size: 14px; }
+        #drop-empty small { font-size: 11px; }
+        .drop-img { width: 100%; max-height: 260px; object-fit: contain; display: block; padding: 8px; }
+        .photo-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+        .mini-btn { border: none; padding: 7px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+        .mini-btn.danger { background: rgba(255,42,95,0.15); color: var(--error); border: 1px solid rgba(255,42,95,0.4); }
+        .tag-chk { transition: 0.2s; }
+        .tag-chk:has(input:checked) { border-color: var(--neon-purple); background: rgba(188,19,254,0.18); color: #fff; box-shadow: 0 0 10px rgba(188,19,254,0.25); }
+        .preview-card { margin-top: 22px; border-radius: 18px; padding: 16px; background: #14121f; border: 1px solid rgba(188,19,254,0.35); box-shadow: 0 0 24px rgba(188,19,254,0.15); }
+        .pv-label { font-size: 10px; letter-spacing: 1.5px; color: var(--neon-cyan); font-weight: 700; margin-bottom: 8px; }
+        .pv-name { font-weight: 800; text-transform: uppercase; font-size: 16px; word-break: break-word; }
+        .pv-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 10px; min-height: 24px; align-items: center; }
+        .pv-tag { font-size: 11px; font-weight: 700; color: #b3adff; border: 1px solid rgba(109,92,255,0.6); background: rgba(109,92,255,0.1); border-radius: 12px; padding: 4px 10px; display: inline-flex; gap: 6px; align-items: center; text-transform: uppercase; }
+        .pv-img-wrap { width: 100%; aspect-ratio: 16 / 10; border-radius: 12px; background: #0b0a12; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .pv-img-wrap img { width: 100%; height: 100%; object-fit: contain; }
+        .pv-ph { color: #6d5cff; font-size: 30px; }
+        .pv-hint { font-size: 11px; color: var(--text-muted); }
+        .pv-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+        .pv-meta b { color: #fff; }
+        .premium-btn { height: 52px; margin-top: 20px; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple)); box-shadow: 0 0 18px rgba(0,240,255,0.25); font-size: 14px; letter-spacing: 1px; color: #fff; }
+        .count-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 22px; padding: 0 8px; border-radius: 11px; background: rgba(0,240,255,0.15); color: var(--neon-cyan); font-size: 12px; margin-left: 6px; }
+        .plan-row input { height: 44px; }
+        
+        /* ===== KEYS STOCK PREMIUM UI ===== */
+        .ks-hero { display:flex; align-items:center; gap:16px; padding:22px; flex-wrap:wrap; }
+        .ks-hero-ic { width:56px; height:56px; border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:22px; color:#fff; background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple)); box-shadow:0 0 24px rgba(0,240,255,.35); }
+        .ks-hero-t { font-size:18px; font-weight:800; letter-spacing:.3px; }
+        .ks-hero-s { font-size:12px; color:var(--text-muted); margin-top:4px; max-width:520px; }
+        .ks-hero-total { margin-left:auto; text-align:right; }
+        .ks-hero-total span { display:block; font-size:32px; font-weight:800; color:var(--neon-cyan); text-shadow:0 0 16px rgba(0,240,255,.5); line-height:1.1; }
+        .ks-hero-total small { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); }
+        .ks-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:20px; }
+        .ks-sec-t { font-size:14px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+        .ks-sec-t i { color:var(--neon-pink); }
+        .ks-lbl { display:flex; justify-content:space-between; align-items:center; font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:var(--text-muted); margin:16px 0 8px; font-weight:600; }
+        #ks-count-live { color:var(--neon-cyan); font-weight:700; text-transform:none; letter-spacing:0; }
+        .ks-sel, .ks-ta { width:100%; background:rgba(0,0,0,.3); border:1px solid rgba(255,255,255,.08); border-radius:12px; color:#fff; padding:12px 14px; font-size:14px; outline:none; font-family:inherit; transition:border-color .2s, box-shadow .2s; }
+        .ks-sel:focus, .ks-ta:focus { border-color:var(--neon-cyan); box-shadow:0 0 0 3px rgba(0,240,255,.12); }
+        .ks-sel option { background:#14121f; }
+        .ks-ta { resize:vertical; font-family:Consolas,'Courier New',monospace; font-size:13px; line-height:1.6; }
+        .ks-btn { width:100%; margin-top:18px; height:50px; border:none; border-radius:14px; color:#fff; font-weight:700; font-size:14px; letter-spacing:.4px; cursor:pointer; background:linear-gradient(90deg,var(--neon-cyan),var(--neon-purple)); box-shadow:0 0 20px rgba(0,240,255,.25); transition:transform .15s, filter .2s; }
+        .ks-btn:hover { filter:brightness(1.1); }
+        .ks-btn:active { transform:scale(.98); }
+        .ks-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border-radius:14px; background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.06); margin-bottom:10px; flex-wrap:wrap; transition:border-color .2s; }
+        .ks-row:hover { border-color:rgba(0,240,255,.25); }
+        .ks-row-name { font-weight:600; font-size:14px; }
+        .ks-row-plan { font-size:11px; color:var(--text-muted); margin-top:3px; }
+        .ks-row-right { display:flex; align-items:center; gap:10px; }
+        .ks-badge { font-size:11px; font-weight:700; padding:5px 11px; border-radius:20px; white-space:nowrap; }
+        .ks-badge.ok { background:rgba(0,255,102,.12); color:#00ff66; border:1px solid rgba(0,255,102,.3); }
+        .ks-badge.empty { background:rgba(255,0,127,.12); color:#ff3d8b; border:1px solid rgba(255,0,127,.3); }
+        .ks-clear { height:32px; padding:0 12px; border:none; border-radius:9px; background:rgba(255,60,90,.15); color:#ff5a7a; font-weight:600; font-size:12px; cursor:pointer; transition:all .2s; }
+        .ks-clear:hover { background:#ff3d5a; color:#fff; }
+        .ks-none { color:var(--text-muted); font-size:13px; text-align:center; padding:30px 10px; }
+    
+        /* ===== MAINTENANCE ADMIN UI ===== */
+        .mt-pill { margin-left:auto; display:inline-flex; align-items:center; gap:8px; padding:8px 14px; border-radius:20px; font-size:12px; letter-spacing:1px; }
+        .mt-pill span { width:8px; height:8px; border-radius:50%; }
+        .mt-pill b { font-weight:800; }
+        .mt-pill.live { background:rgba(0,255,102,.1); border:1px solid rgba(0,255,102,.35); color:#00ff66; }
+        .mt-pill.live span { background:#00ff66; box-shadow:0 0 10px #00ff66; }
+        .mt-pill.down { background:rgba(255,61,139,.1); border:1px solid rgba(255,61,139,.4); color:#ff3d8b; }
+        .mt-pill.down span { background:#ff3d8b; box-shadow:0 0 10px #ff3d8b; animation:mtBlink 1.2s infinite; }
+        @keyframes mtBlink { 0%,100% { opacity:1; } 50% { opacity:.25; } }
+        .mt-row { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:14px 16px; border-radius:14px; background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.06); }
+        .mt-row-t { font-weight:700; font-size:14px; }
+        .mt-row-s { font-size:12px; color:var(--text-muted); margin-top:3px; }
+        .mt-sub { font-size:12px; color:var(--text-muted); margin-bottom:14px; line-height:1.5; }
+
+        /* ===== ORDERS / DEPOSITS / BALANCE PREMIUM UI ===== */
+        .tx-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-bottom:18px; }
+        .tx-stat { position:relative; overflow:hidden; padding:16px 18px; border-radius:16px; background:rgba(0,0,0,.28); border:1px solid rgba(255,255,255,.07); }
+        .tx-stat::after { content:""; position:absolute; right:-28px; top:-28px; width:90px; height:90px; border-radius:50%; background:var(--glow,#00f0ff); opacity:.14; filter:blur(12px); }
+        .tx-stat-l { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); }
+        .tx-stat-v { font-size:24px; font-weight:800; margin-top:6px; }
+        .tx-toolbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+        .tx-search, .tx-select { height:42px; background:rgba(0,0,0,.3); border:1px solid rgba(255,255,255,.08); border-radius:12px; color:#fff; padding:0 14px; font-size:13px; outline:none; font-family:inherit; }
+        .tx-search { flex:1; min-width:200px; }
+        .tx-select option { background:#14121f; }
+        .tx-search:focus, .tx-select:focus { border-color:var(--neon-cyan); box-shadow:0 0 0 3px rgba(0,240,255,.12); }
+        .tx-chip { height:40px; padding:0 16px; border-radius:12px; border:1px solid rgba(255,255,255,.1); background:rgba(0,0,0,.25); color:var(--text-muted); cursor:pointer; font-weight:600; font-size:12px; font-family:inherit; transition:all .2s; }
+        .tx-chip.active { color:#fff; border-color:var(--neon-cyan); background:rgba(0,240,255,.08); box-shadow:0 0 14px rgba(0,240,255,.2); }
+        .tx-list { display:flex; flex-direction:column; gap:10px; max-height:640px; overflow-y:auto; padding-right:4px; }
+        .tx-item { display:grid; grid-template-columns:4px 1fr auto; gap:14px; align-items:center; padding:14px 16px; border-radius:14px; background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.06); transition:border-color .2s; }
+        .tx-item:hover { border-color:rgba(0,240,255,.25); }
+        .tx-accent { width:4px; height:100%; min-height:46px; border-radius:4px; background:linear-gradient(180deg,var(--neon-cyan),var(--neon-purple)); }
+        .tx-accent.in { background:linear-gradient(180deg,#00ff66,#00b347); }
+        .tx-accent.out { background:linear-gradient(180deg,#ff3d8b,#ff7a3d); }
+        .tx-main-t { font-weight:700; font-size:14px; }
+        .tx-main-s { font-size:11px; color:var(--text-muted); margin-top:4px; display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+        .tx-main-s i { margin-right:4px; opacity:.8; }
+        .tx-kind { font-size:10px; font-weight:700; padding:3px 8px; border-radius:12px; text-transform:uppercase; letter-spacing:.6px; }
+        .tx-kind.gateway { background:rgba(0,240,255,.1); color:#00f0ff; border:1px solid rgba(0,240,255,.3); }
+        .tx-kind.admin { background:rgba(0,255,102,.1); color:#00ff66; border:1px solid rgba(0,255,102,.3); }
+        .tx-kind.removed { background:rgba(255,61,139,.1); color:#ff3d8b; border:1px solid rgba(255,61,139,.35); }
+        .tx-key { font-family:Consolas,'Courier New',monospace; font-size:12px; color:#7ff; background:rgba(0,240,255,.07); border:1px dashed rgba(0,240,255,.25); padding:5px 8px; border-radius:8px; word-break:break-all; margin-top:8px; display:inline-flex; align-items:center; gap:6px; }
+        .tx-copy { background:none; border:none; color:var(--neon-cyan); cursor:pointer; padding:0 2px; font-size:13px; }
+        .tx-copy:hover { color:#fff; }
+        .tx-amt { font-weight:800; font-size:17px; text-align:right; white-space:nowrap; }
+        .tx-amt.in { color:#00ff66; text-shadow:0 0 10px rgba(0,255,102,.3); }
+        .tx-amt.out { color:#ff3d8b; text-shadow:0 0 10px rgba(255,61,139,.3); }
+        .tx-empty { text-align:center; color:var(--text-muted); padding:44px 10px; font-size:13px; }
+        .action-btn.remove { background:var(--error); color:#fff; }
+        .bal-wrap { display:flex; flex-direction:column; gap:8px; min-width:200px; }
+        .bal-top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+        .bal-input-row { display:flex; gap:6px; align-items:center; }
+        .bal-input-row input { flex:1; min-width:70px; height:32px; background:rgba(0,0,0,.6); border:1px solid rgba(255,255,255,.15); border-radius:8px; color:#00ff66; text-align:center; font-family:inherit; outline:none; }
+        .bal-input-row input:focus { border-color:var(--neon-cyan); }
+        .bal-input-row .action-btn { height:32px; justify-content:center; padding:0 10px; }
+        .action-btn.add { background:var(--success); color:#000; }
+
+        /* ===== QUICK ACTIONS ===== */
+        .qa-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; margin-top:16px; }
+        .qa-btn { display:flex; align-items:center; gap:14px; padding:18px; border-radius:16px; background:rgba(0,0,0,.28); border:1px solid rgba(255,255,255,.08); color:#fff; cursor:pointer; text-align:left; font-family:inherit; transition:transform .2s, border-color .2s, box-shadow .2s; }
+        .qa-btn:hover { transform:translateY(-3px); border-color:var(--c); box-shadow:0 10px 28px rgba(0,0,0,.4), 0 0 22px color-mix(in srgb, var(--c) 35%, transparent); }
+        .qa-ic { flex-shrink:0; width:46px; height:46px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:18px; color:#fff; background:var(--c); box-shadow:0 0 18px color-mix(in srgb, var(--c) 45%, transparent); }
+        .qa-t { display:block; font-weight:700; font-size:14px; }
+        .qa-s { display:block; font-size:11px; color:var(--text-muted); margin-top:3px; }
+
+        /* ===== EDIT PRODUCT PREMIUM ===== */
+        #view-EditProduct .edit-card { background:rgba(0,0,0,.28); transition:border-color .2s, box-shadow .2s; }
+        #view-EditProduct .edit-card:hover { border-color:rgba(188,19,254,.45); box-shadow:0 0 22px rgba(188,19,254,.12); }
+        #view-EditProduct .ec-head { display:flex; align-items:center; gap:12px; }
+        #view-EditProduct .ec-thumb { width:52px; height:52px; border-radius:12px; object-fit:cover; background:#1a1730; border:1px solid rgba(255,255,255,.08); }
+        #view-EditProduct .ec-title { font-weight:800; font-size:16px; }
+        #view-EditProduct .fl { font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:var(--text-muted); font-weight:600; }
+</style>
+</head>
+<body>
+
+<div id="loader">
+    <div class="speed-spinner-box">
+        <div class="spinner-outer"></div>
+        <div class="spinner-inner"></div>
+    </div>
+    <div class="loader-text" id="loader-status-text">CONNECTING ENGINE...</div>
+</div>
+
+<div id="toast-container"></div>
+
+<div class="login-wrapper" id="block-auth-screen">
+    <div class="login-card">
+        <div class="login-icon-circle"><i class="fas fa-envelope"></i></div>
+        <h1>Welcome Back! 👋</h1>
+        <p>Login via Firebase Gmail & Password</p>
+        
+        <div class="auth-group">
+            <label><i class="fas fa-envelope"></i> Gmail Address</label>
+            <div class="auth-input-container">
+                <i class="fas fa-envelope field-icon"></i>
+                <input type="email" class="auth-input focused-red" id="txt-login-email" placeholder="example@gmail.com">
+            </div>
+        </div>
+        
+        <div class="auth-group">
+            <label><i class="fas fa-lock"></i> Password</label>
+            <div class="auth-input-container">
+                <i class="fas fa-lock field-icon"></i>
+                <input type="password" class="auth-input" id="txt-login-pass" placeholder="Enter Password">
+                <i class="fas fa-eye toggle-eye" id="trigger-eye-btn" onclick="togglePasswordVisibility()"></i>
+            </div>
+        </div>
+        
+        <button class="btn-signin" id="btn-submit-auth">Sign In <i class="fas fa-arrow-right"></i></button>
+        
+        <div class="support-box">
+            <div class="support-title"><i class="fas fa-headset"></i> Need Help? Contact Us</div>
+            <div class="social-grid">
+                <a href="https://wa.me/yournumber" target="_blank" class="social-btn wa"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                <a href="https://t.me/yourchannel" target="_blank" class="social-btn tg"><i class="fab fa-telegram-plane"></i> Telegram</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="block-workspace" class="hidden">
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="menu-btn" id="menu-toggle"><i class="fas fa-bars"></i></button>
+            <div class="logo"><img class="admin-brand-dp" src="aryan-gaming-dp.png" alt="ARYAN GAMING">ARYAN <span>ADMIN PANEL</span></div>
+        </div>
+    </nav>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header-box">
+            <div class="sidebar-logo-icon-bg" style="background:#090909;padding:0;overflow:hidden"><img src="aryan-gaming-dp.png" alt="ARYAN GAMING" style="width:100%;height:100%;object-fit:cover;border-radius:10px"></div>
+            <div class="sidebar-header-text">
+                <span class="sidebar-header-title">Admin Panel</span>
+                <span class="sidebar-header-subtitle" id="user-display-email">Secure Gateway</span>
+            </div>
+            <button class="sidebar-close" id="sidebar-close"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div class="sidebar-menu-cat">Navigation Settings</div>
+        <div class="sidebar-menu-list">
+            <div class="sidebar-item active-menu" id="menu-Dashboard" onclick="switchTab('Dashboard')"><i class="fas fa-chart-line"></i> Dashboard Metrics</div>
+            <div class="sidebar-item" id="menu-ProductManager" onclick="switchTab('ProductManager')"><i class="fas fa-box-open"></i> Add Product</div>
+            <div class="sidebar-item" id="menu-EditProduct" onclick="switchTab('EditProduct')"><i class="fas fa-edit"></i> Edit Product</div>
+            <div class="sidebar-item" id="menu-PublicAPISettings" onclick="switchTab('PublicAPISettings')"><i class="fas fa-code"></i> Public API / Channel</div>
+            <div class="sidebar-item" id="menu-Resellers" onclick="switchTab('Resellers')"><i class="fas fa-users-cog"></i> Manage Resellers</div>
+            <div class="sidebar-item" id="menu-KeysStock" onclick="switchTab('KeysStock')"><i class="fas fa-warehouse"></i> Keys Stock</div>
+            <div class="sidebar-item" id="menu-Maintenance" onclick="switchTab('Maintenance')"><i class="fas fa-tools"></i> Maintenance Mode</div>
+            <div class="sidebar-item" id="menu-Orders" onclick="switchTab('Orders')"><i class="fas fa-receipt"></i> Total Orders</div>
+            <div class="sidebar-item" id="menu-Deposits" onclick="switchTab('Deposits')"><i class="fas fa-wallet"></i> Deposit History</div>
+            <div class="sidebar-item" id="menu-AutoPayment" onclick="switchTab('AutoPayment')"><i class="fas fa-bolt"></i> Auto Payment Add</div>
+            <div class="sidebar-item" id="menu-Tickets" onclick="switchTab('Tickets')"><i class="fas fa-headset"></i> Support Tickets</div>
+            <div class="sidebar-item" id="menu-Links" onclick="switchTab('Links')"><i class="fas fa-link"></i> Site Links / How-To</div>
+            
+            <div class="sidebar-item menu-logout-btn" onclick="triggerAdminLogout()"><i class="fas fa-sign-out-alt"></i> Logout Session</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tab-view-section" id="view-Dashboard">
+            <div class="glass">
+                <h2><i class="fas fa-eye"></i> Realtime System Metrics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header"><span class="stat-label">Total Resellers</span><i class="fas fa-users" style="color:var(--neon-cyan)"></i></div>
+                        <div class="stat-num" id="lbl-total-users">0</div>
+                    </div>
+                    <div class="stat-card purple">
+                        <div class="stat-header"><span class="stat-label">Active Products</span><i class="fas fa-cubes" style="color:var(--neon-purple)"></i></div>
+                        <div class="stat-num" id="lbl-total-prods">0</div>
+                    </div>
+                    <div class="stat-card pink">
+                        <div class="stat-header"><span class="stat-label">Total Generated Keys</span><i class="fas fa-key" style="color:var(--neon-pink)"></i></div>
+                        <div class="stat-num" id="lbl-total-keys">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass">
+                <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+                <div class="qa-grid">
+                    <button class="qa-btn" style="--c:#00ff66" onclick="switchTab('Orders')">
+                        <span class="qa-ic"><i class="fas fa-receipt"></i></span>
+                        <span><span class="qa-t">Total Orders</span><span class="qa-s">Reseller purchases dekho</span></span>
+                    </button>
+                    <button class="qa-btn" style="--c:#ffb800" onclick="switchTab('Deposits')">
+                        <span class="qa-ic"><i class="fas fa-wallet"></i></span>
+                        <span><span class="qa-t">Deposit History</span><span class="qa-s">Deposit, add aur remove</span></span>
+                    </button>
+                    <button class="qa-btn" style="--c:#bc13fe" onclick="switchTab('Resellers')">
+                        <span class="qa-ic"><i class="fas fa-users-cog"></i></span>
+                        <span><span class="qa-t">Manage Resellers</span><span class="qa-s">Balance add / remove karo</span></span>
+                    </button>
+                    <button class="qa-btn" style="--c:#bc13fe" onclick="switchTab('EditProduct')">
+                        <span class="qa-ic"><i class="fas fa-edit"></i></span>
+                        <span><span class="qa-t">Edit Product</span><span class="qa-s">Naam, photo, plans badlo</span></span>
+                    </button>
+                    <button class="qa-btn" style="--c:#00f0ff" onclick="switchTab('KeysStock')">
+                        <span class="qa-ic"><i class="fas fa-warehouse"></i></span>
+                        <span><span class="qa-t">Keys Stock</span><span class="qa-s">Real keys add karo</span></span>
+                    </button>
+                    <button class="qa-btn" style="--c:#ff3d8b" onclick="switchTab('Maintenance')">
+                        <span class="qa-ic"><i class="fas fa-tools"></i></span>
+                        <span><span class="qa-t">Maintenance Mode</span><span class="qa-s">Site ya product band karo</span></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-view-section hidden" id="view-ProductManager">
+            <div class="glass add-hero">
+                <div class="add-hero-ic"><i class="fas fa-box-open"></i></div>
+                <div>
+                    <div class="add-hero-t">Add Product</div>
+                    <div class="add-hero-s">Photo, categories aur plans set karke product turant live karo</div>
+                </div>
+            </div>
+
+            <div class="glass add-card">
+                <div class="step-h"><span class="step-n">1</span> Product Info</div>
+                <div class="input-group"><label>Product Title</label><input type="text" id="prod-name" placeholder="e.g. PHANTOM ANDROID + IOS"/></div>
+                <div class="input-group"><label>ARYAN PID ID (User Panel / API par dikhega)</label><input type="text" id="prod-pid" placeholder="e.g. 151" inputmode="numeric"/></div>
+
+                <div class="step-h"><span class="step-n">2</span> Product Photo</div>
+                <label class="drop-zone" id="drop-zone" for="prod-image-file">
+                    <div id="drop-empty"><i class="fas fa-cloud-arrow-up"></i><b>Photo upload karo</b><small>Tap karke select karo ya photo yahan drag karke chhod do</small></div>
+                    <img id="prod-img-preview" class="drop-img hidden" alt=""/>
+                </label>
+                <input type="file" id="prod-image-file" accept="image/*" class="hidden"/>
+                <div class="photo-actions"><button type="button" id="prod-img-remove" class="mini-btn danger hidden"><i class="fas fa-trash"></i> Photo hatao</button></div>
+                <div class="input-group" style="margin-top:12px;"><label>Ya Photo Link (optional)</label><input type="text" id="prod-image-url" placeholder="https://..."/></div>
+
+                <div class="step-h"><span class="step-n">3</span> Categories</div>
+                <div class="tag-box" id="np-tags"></div>
+
+                <div class="step-h"><span class="step-n">4</span> Plans (Duration + Price)</div>
+                <p class="plan-hint"><b>User ₹</b> = normal user ka price &nbsp;·&nbsp; <b>Reseller ₹</b> = reseller ka price. Dono bharna zaroori hai.</p>
+                <div class="plan-head"><span>Duration</span><span>User ₹</span><span>Reseller ₹</span><span></span></div>
+                <div class="plan-box" id="np-plans"></div>
+                <button type="button" class="pl-add" id="np-add-plan"><i class="fas fa-plus"></i> Plan Add Karo</button>
+
+                <div class="step-h"><span class="step-n">5</span> Download Link (optional)</div>
+                <div class="input-group"><input type="text" id="prod-download" placeholder="https://..."/></div>
+
+                <div class="step-h"><span class="step-n">6</span> Supplier PID (auto key ke liye, optional)</div>
+                <div class="input-group"><input type="text" id="prod-supplier-pid" placeholder="Supplier table wala PID"/></div>
+
+                <div class="step-h"><span class="step-n">7</span> Game, Features aur Video (optional)</div>
+                <div class="input-group"><input type="text" id="prod-game" placeholder="Game: FREEFIRE / CARROM POOL / 8 BALL POOL"/></div>
+                <div class="input-group"><textarea id="prod-features" rows="4" placeholder="Features (har line me ek): Aimbot, Headshot, Esp line"></textarea></div>
+                <div class="input-group"><input type="text" id="prod-video" placeholder="Video / Feedback link (https://...)"/></div>
+                <div class="input-group"><label>Badge (card par dikhega)</label><select id="prod-badge" class="ec-input"><option value="">Koi nahi</option><option value="NEW">NEW</option><option value="HOT">HOT</option><option value="BEST SELLER">BEST SELLER</option></select></div>
+
+                <div class="preview-card">
+                    <div class="pv-label">LIVE PREVIEW</div>
+                    <div class="pv-name" id="pv-name">PRODUCT NAME</div>
+                    <div class="pv-tags" id="pv-tags"></div>
+                    <div class="pv-img-wrap" id="pv-img"><div class="pv-ph"><i class="fas fa-image"></i></div></div>
+                    <div class="pv-meta"><span id="pv-count">0 durations available</span><span>From <b id="pv-from">₹0.00</b></span></div>
+                </div>
+
+                <button class="btn btn-cyan premium-btn" id="btn-add-product"><i class="fas fa-rocket"></i> Deploy Live Product</button>
+            </div>
+
+        </div>
+
+        <div class="tab-view-section hidden" id="view-EditProduct">
+            <div class="ks-hero glass">
+                <div class="ks-hero-ic" style="background:linear-gradient(135deg,#bc13fe,#00f0ff);box-shadow:0 0 24px rgba(188,19,254,.35)"><i class="fas fa-edit"></i></div>
+                <div>
+                    <div class="ks-hero-t">Edit Product</div>
+                    <div class="ks-hero-s">Product ka naam, photo, categories, download link aur plans yahan edit karo</div>
+                </div>
+                <div class="ks-hero-total"><span id="edit-count">0</span><small>Products</small></div>
+            </div>
+            <div class="glass">
+                <div class="tx-toolbar">
+                    <input class="tx-search" id="edit-search" placeholder="Product name se search karo...">
+                </div>
+                <div id="edit-product-list"><div class="empty-note">No products yet</div></div>
+            </div>
+        </div>
+
+        <div class="tab-view-section hidden" id="view-Resellers">
+            <div class="glass">
+                <h2><i class="fas fa-users-cog"></i> Reseller Strategic Account Manager</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>Username</th><th>Password</th><th>Email Config</th><th>Balance (₹) · Add / Remove</th><th>Security & Access Actions</th></tr>
+                        </thead>
+                        <tbody id="admin-credentials-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-view-section hidden" id="view-KeysStock">
+            <div class="ks-hero glass">
+                <div class="ks-hero-ic"><i class="fas fa-warehouse"></i></div>
+                <div>
+                    <div class="ks-hero-t">Keys Stock</div>
+                    <div class="ks-hero-s">Yahan jo keys add karoge, sirf wahi reseller ko milengi. Stock nahi = sale nahi.</div>
+                </div>
+                <div class="ks-hero-total"><span id="ks-total">0</span><small>Total keys in stock</small></div>
+            </div>
+            <div class="ks-grid">
+                <div class="glass">
+                    <div class="ks-sec-t"><i class="fas fa-plus-circle"></i> Naya stock add karo</div>
+                    <label class="ks-lbl">Product</label>
+                    <select id="ks-product" class="ks-sel"></select>
+                    <label class="ks-lbl">Plan / Duration</label>
+                    <select id="ks-plan" class="ks-sel"></select>
+                    <label class="ks-lbl"><span>Keys (ek line me ek key)</span><span id="ks-count-live">0 keys</span></label>
+                    <textarea id="ks-keys" class="ks-ta" rows="8" placeholder="FF-XXXXXXXXX-XXXX&#10;FF-YYYYYYYYY-YYYY"></textarea>
+                    <button class="ks-btn" id="btn-add-stock"><i class="fas fa-plus"></i> Add to Stock</button>
+                </div>
+                <div class="glass">
+                    <div class="ks-sec-t"><i class="fas fa-boxes"></i> Current Stock</div>
+                    <div id="ks-stock-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-view-section hidden" id="view-Maintenance">
+            <div class="ks-hero glass">
+                <div class="ks-hero-ic" style="background:linear-gradient(135deg,#ff3d8b,#ffb800);box-shadow:0 0 24px rgba(255,61,139,.35)"><i class="fas fa-tools"></i></div>
+                <div>
+                    <div class="ks-hero-t">Maintenance Mode</div>
+                    <div class="ks-hero-s">Poori site band karo ya sirf kuch products ko maintenance me daalo.</div>
+                </div>
+                <div class="mt-pill live" id="mt-status-pill"><span></span><b>LIVE</b></div>
+            </div>
+            <div class="ks-grid">
+                <div class="glass">
+                    <div class="ks-sec-t"><i class="fas fa-globe"></i> Full Site Maintenance</div>
+                    <div class="mt-row">
+                        <div>
+                            <div class="mt-row-t">Site Maintenance Mode</div>
+                            <div class="mt-row-s">ON karne par reseller ka poora panel band ho jayega</div>
+                        </div>
+                        <label class="ap-switch"><input type="checkbox" id="mt-site-on"><span class="ap-slider"></span></label>
+                    </div>
+                    <label class="ks-lbl">Message (reseller ko dikhega)</label>
+                    <textarea id="mt-site-msg" class="ks-ta" rows="3" placeholder="Hum kuch improvements kar rahe hain..."></textarea>
+                    <button class="ks-btn" id="btn-save-maint"><i class="fas fa-save"></i> Save Maintenance</button>
+                </div>
+                <div class="glass">
+                    <div class="ks-sec-t"><i class="fas fa-box-open"></i> Product Maintenance</div>
+                    <div class="mt-sub">ON product ke Buy par "Maintenance" dikhega aur Download button hide ho jayega.</div>
+                    <div id="mt-product-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-view-section hidden" id="view-Orders">
+            <div class="ks-hero glass">
+                <div class="ks-hero-ic" style="background:linear-gradient(135deg,#00ff66,#00b8ff);box-shadow:0 0 24px rgba(0,255,102,.3)"><i class="fas fa-receipt"></i></div>
+                <div>
+                    <div class="ks-hero-t">Total Orders</div>
+                    <div class="ks-hero-s">Resellers ne admin stock se jo keys khareedi hain, sab yahan real time me</div>
+                </div>
+                <div class="ks-hero-total"><span id="ord-total">0</span><small>Total orders</small></div>
+            </div>
+            <div class="tx-stats">
+                <div class="tx-stat" style="--glow:#00ff66"><div class="tx-stat-l">Revenue</div><div class="tx-stat-v" id="ord-rev">₹0.00</div></div>
+                <div class="tx-stat" style="--glow:#00f0ff"><div class="tx-stat-l">Buying Resellers</div><div class="tx-stat-v" id="ord-buyers">0</div></div>
+                <div class="tx-stat" style="--glow:#bc13fe"><div class="tx-stat-l">Today</div><div class="tx-stat-v" id="ord-today">0</div></div>
+            </div>
+            <div class="glass">
+                <div class="tx-toolbar">
+                    <input class="tx-search" id="ord-search" placeholder="Search user, product ya key...">
+                    <select class="tx-select" id="ord-product"><option value="ALL">All products</option></select>
+                    <button class="btn btn-cyan" type="button" id="btn-export-orders"><i class="fas fa-file-csv"></i> Export CSV</button>
+                </div>
+                <div class="tx-list" id="ord-list"></div>
+            </div>
+        </div>
+
+        <div class="tab-view-section hidden" id="view-Deposits">
+            <div class="ks-hero glass">
+                <div class="ks-hero-ic" style="background:linear-gradient(135deg,#ffb800,#00ff66);box-shadow:0 0 24px rgba(255,184,0,.3)"><i class="fas fa-wallet"></i></div>
+                <div>
+                    <div class="ks-hero-t">Deposit History</div>
+                    <div class="ks-hero-s">Gateway se aaye deposits, admin ke add/remove kiye balance ka poora record</div>
+                </div>
+                <div class="ks-hero-total"><span id="dep-total">0</span><small>Entries</small></div>
+            </div>
+            <div class="tx-stats">
+                <div class="tx-stat" style="--glow:#00ff66"><div class="tx-stat-l">Total Deposited</div><div class="tx-stat-v" id="dep-in">₹0.00</div></div>
+                <div class="tx-stat" style="--glow:#ff3d8b"><div class="tx-stat-l">Total Removed</div><div class="tx-stat-v" id="dep-out">₹0.00</div></div>
+                <div class="tx-stat" style="--glow:#00f0ff"><div class="tx-stat-l">Today Deposits</div><div class="tx-stat-v" id="dep-today">0</div></div>
+            </div>
+            <div class="glass">
+                <div class="tx-toolbar" id="dep-chips">
+                    <button class="tx-chip active" data-f="ALL" onclick="setDepFilter('ALL')">All</button>
+                    <button class="tx-chip" data-f="gateway" onclick="setDepFilter('gateway')">Gateway</button>
+                    <button class="tx-chip" data-f="admin" onclick="setDepFilter('admin')">Admin Add</button>
+                    <button class="tx-chip" data-f="removed" onclick="setDepFilter('removed')">Removed</button>
+                </div>
+                <div class="tx-list" id="dep-list"></div>
+            </div>
+        </div>
+
+        <div class="tab-view-section hidden" id="view-Tickets">
+            <div class="glass"><h2><i class="fas fa-headset"></i> Support Tickets</h2><div id="tk-admin-list"></div></div>
+        </div>
+
+        <div class="tab-view-section hidden" id="view-Links">
+            <div class="glass">
+                <h2><i class="fas fa-link"></i> Site Links &amp; How-To Videos</h2>
+                <div class="ap-desc">Yahan se kabhi bhi link badlo, user ke buttons par turant naya link khulega (How To Video wagairah). Khali chhodoge to button "link set nahi" dikhayega.</div>
+                <div class="input-group"><label>How To Buy / How To Use video link <span style="color:#06efe6">(button: HOW TO BUY AND HOW TO USE)</span></label><input type="text" id="lk-howToBuyUrl" placeholder="https://..."></div>
+                <div class="input-group"><label>How To Deposit video link <span style="color:#06efe6">(red HOW TO DEPOSIT? button)</span></label><input type="text" id="lk-howToDepositUrl" placeholder="https://..."></div>
+                <div class="input-group"><label>Donate Money For Any Help link</label><input type="text" id="lk-donateUrl" placeholder="https://..."></div>
+                <div class="input-group"><label>Update Group (JOIN NOW) link</label><input type="text" id="lk-joinUrl" placeholder="https://..."></div>
+                <div class="input-group"><label>Floating Telegram button link</label><input type="text" id="lk-telegramUrl" placeholder="https://..."></div>
+                <div class="input-group"><label>Announcement (dashboard par chalti hui line, khali = band)</label><input type="text" id="lk-announcement" maxlength="160" placeholder="Jaise: Aaj nayi update aayi hai!"></div>
+                <div class="input-group"><label>Safety balance (Keep N+ balance)</label><input type="number" id="lk-safetyBalance" min="0" placeholder="10"></div>
+                <div class="input-group"><label>Free Reseller ke liye kitne referral chahiye</label><input type="number" id="lk-refTarget" min="1" placeholder="30"></div>
+                <div class="input-group"><label>Binance / USDT details</label><textarea id="lk-binanceText" rows="3" placeholder="Wallet address, instructions..."></textarea></div>
+                <div class="input-group"><label>Bkash / Nagad details</label><textarea id="lk-bkashText" rows="3" placeholder="Number, instructions..."></textarea></div>
+                <button class="btn btn-cyan" id="btn-save-links"><i class="fas fa-save"></i> Save</button>
+            </div>
+        </div>
+
+        <div class="tab-view-section hidden" id="view-AutoPayment">
+            <div class="glass">
+                <div class="ap-head"><div class="ic"><i class="fas fa-bolt"></i></div><h2>Payment Setting</h2></div>
+                <div class="ap-desc">FamGateway ki API Key add karo. Reseller Deposit me UPI QR se payment karega, 5 minute me expire hoga aur payment hote hi balance apne aap add ho jayega.</div>
+
+                <div class="ap-switch-row"><span><i class="fas fa-power-off" style="margin-right:8px;color:#ff00e5"></i> Enable Auto Payment</span>
+                    <label class="ap-switch"><input type="checkbox" id="ap-enabled"><span class="ap-slider"></span></label>
+                </div>
+
+                                <div class="input-group"><label>API Key</label>
+                    <div class="ap-keywrap"><input type="password" id="ap-api-key" placeholder="Gateway API Key (dashboard → API Keys)" autocomplete="off"><button type="button" id="ap-key-eye"><i class="fas fa-eye"></i></button></div>
+                </div>
+                <div class="input-group"><label>Site URL (Return URL - https://...)</label><input type="text" id="ap-site-url" placeholder="https://yoursite.com/ (APK / file me chalane par zaroori)"></div>
+                <div class="ap-row2">
+                    <div class="input-group"><label>Min Amount (₹)</label><input type="number" id="ap-min" value="1" min="1"></div>
+                    <div class="input-group"><label>Max Amount (₹)</label><input type="number" id="ap-max" value="50000" min="1"></div>
+                </div>
+                <button class="btn btn-cyan" id="btn-save-autopay"><i class="fas fa-save"></i> Save Payment Setting</button>
+            </div>
+
+            <div class="glass" id="famgateway-admin-card">
+                <div class="ap-head"><div class="ic"><i class="fas fa-wallet"></i></div><h2>FamGateway API Settings</h2></div>
+                <div class="ap-desc">Official API: https://famgateway.in · Create Order, Payment Verify aur HMAC Webhook. API key backend ke private storage mein save hogi; browser database mein nahi.</div>
+                <div class="ap-switch-row"><span>Enable FamGateway</span><label class="ap-switch"><input type="checkbox" id="fg-enabled"><span class="ap-slider"></span></label></div>
+                <div class="input-group"><label>ARYAN Backend API URL (deployed server)</label><input id="fg-backend-url" type="url" placeholder="https://your-aryan-api.example.com"></div>
+                <div class="input-group"><label>Gateway API Base URL</label><input id="fg-base-url" type="url" value="https://famgateway.in" placeholder="https://famgateway.in"></div>
+                <div class="input-group"><label>FamGateway API Key (dashboard se)</label><div class="ap-keywrap"><input id="fg-api-key" type="password" autocomplete="off" placeholder="Paste API Key"><button type="button" id="fg-key-eye"><i class="fas fa-eye"></i></button></div><small>Save ke baad key dobara screen par show nahi hogi.</small></div>
+                <div class="input-group"><label>Create Order Endpoint</label><input id="fg-create-endpoint" value="/api/create-order" readonly></div>
+                <div class="input-group"><label>Verify Payment Endpoint</label><input id="fg-verify-endpoint" value="/api/verify-order.php" readonly></div>
+                <div class="input-group"><label>Public Checkout Status</label><input value="/api/checkout-status.php" readonly></div>
+                <div class="input-group"><label>Webhook URL (backend par configure karein)</label><input id="fg-webhook-url" type="url" placeholder="https://your-api-domain.com/api/webhooks/famgateway"></div>
+                <div class="ap-row2"><div class="input-group"><label>Min Amount (₹)</label><input id="fg-min" type="number" min="1" value="1"></div><div class="input-group"><label>Max Amount (₹)</label><input id="fg-max" type="number" min="1" value="50000"></div></div>
+                <button class="btn btn-cyan" id="btn-save-famgateway"><i class="fas fa-shield-alt"></i> Save FamGateway API</button>
+                <div id="fg-config-status" style="margin-top:10px;font-size:12px;color:var(--text-muted);">Backend configuration status: check after loading</div>
+            </div>
+
+            <div class="glass">
+                <h2><i class="fas fa-crown"></i> Reseller Banne Ka Amount</h2>
+                <div class="ap-desc">User ke wallet me itna balance ho to Dashboard par "Upgrade Now" se Reseller ban jayega (paise katenge nahi, sirf balance dekha jayega).</div>
+                <div class="ap-switch-row"><span>Reseller Upgrade ON</span><label class="ap-switch"><input type="checkbox" id="rs-enabled"><span class="ap-slider"></span></label></div>
+                <div class="input-group"><label>Minimum balance (₹)</label><input type="number" id="rs-min" min="0" placeholder="10"></div>
+                <div class="input-group"><label>Referral commission (% har key par)</label><input type="number" id="rs-pct" min="0" max="50" step="0.1" placeholder="1"></div>
+                <button class="btn btn-cyan" id="btn-save-rs"><i class="fas fa-save"></i> Save</button>
+            </div>
+
+            <div class="glass">
+                <h2><i class="fas fa-key"></i> Auto Key Supplier</h2>
+                <div class="ap-desc">Supplier ki auto key ke liye API pehle se saved hai. Bas product add karte waqt uska Supplier PID daalo, key auto milegi.</div>
+                <div class="ap-switch-row"><span>Enable Auto Key</span><label class="ap-switch"><input type="checkbox" id="sup-enabled"><span class="ap-slider"></span></label></div>
+                <div class="input-group"><label>Supplier API Key</label><input type="password" id="sup-key" autocomplete="off" placeholder="Active API Access Token"></div>
+                <div class="input-group"><label>Supplier Master Key (x-master-key)</label><input type="password" id="sup-master" autocomplete="off" placeholder="x-master-key"></div>
+                <button class="btn btn-cyan" id="btn-save-sup"><i class="fas fa-save"></i> Save</button>
+            </div>
+
+            <div class="glass">
+                <h2><i class="fas fa-receipt"></i> Recent Auto Payments</h2>
+                <div id="ap-log-list"><div style="color:var(--text-muted);font-size:12px;">No auto payments yet.</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="/src/admin.js"></script>
+</body>
+</html>
